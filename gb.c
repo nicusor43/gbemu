@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
+#include "gb.h"
 
-#include "cpu.h"
 
 int main() {
     return 0;

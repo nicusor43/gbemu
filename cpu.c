@@ -4,6 +4,11 @@
 
 #include "cpu.h"
 
+#define CHECK_BIT(x, n) (registers.x >> n & 1)
+
+struct gb_registers registers;
+struct gb_timer timer;
+
 void cpu_start() {
     registers.af = 0x01B0;
     registers.bc = 0x0013;
@@ -65,9 +70,8 @@ void setFlagC(bool value) {
 }
 
 
-
 void cycle_clock(int cycles) {
-    timer.div++;
+    timer.div += cycles;
     // TODO: Actually implement the timer like it should be implemented; this is half-assed.
     if (timer.tac >> 2 & 1) {
         switch (timer.tac & 0b11) {
@@ -76,7 +80,7 @@ void cycle_clock(int cycles) {
                     timer.tima++;
                     if (timer.tima == 0) {
                         timer.tima = timer.tma;
-                        }
+                    }
                 }
                 break;
             case 0b01:
@@ -116,6 +120,82 @@ void run_cpu() {
 
 }
 
-void nop() {
+static inline void nop() {
     registers.pc++;
+    cycle_clock(1);
 }
+
+// When called, it will look something like this inc(&(&registers->l)); dumb language
+static inline void inc(uint8_t *reg) {
+    if ((*reg & 0x0F) == 0x0F) {
+        setFlagH(true);
+    } else {
+        setFlagH(false);
+    }
+    (*reg)++;
+    if (*reg == 0) {
+        setFlagZ(true);
+    } else {
+        setFlagZ(false);
+    }
+    setFlagN(false);
+
+    registers.pc++;
+    cycle_clock(1);
+}
+
+static inline void inc_hl(uint8_t *hl) {
+    if ((*hl & 0x0F) == 0x0F) {
+        setFlagH(true);
+    } else {
+        setFlagH(false);
+    }
+    (*hl)++;
+    if (*hl == 0) {
+        setFlagZ(true);
+    } else {
+        setFlagZ(false);
+    }
+    setFlagN(false);
+
+    registers.pc++;
+    cycle_clock(3);
+}
+
+static inline void dec(uint8_t *reg) {
+    if ((*reg & 0x0F) == 0x00) {
+        setFlagH(true);
+    } else {
+        setFlagH(false);
+    }
+    (*reg)--;
+    if (*reg == 0) {
+        setFlagZ(true);
+    } else {
+        setFlagZ(false);
+    }
+    setFlagN(false);
+
+    registers.pc++;
+    cycle_clock(1);
+}
+
+static inline void dec_hl(uint8_t *hl) {
+    if ((*hl & 0x0F) == 0x00) {
+        setFlagH(true);
+    } else {
+        setFlagH(false);
+    }
+    (*hl)--;
+    if (*hl == 0) {
+        setFlagZ(true);
+    } else {
+        setFlagZ(false);
+    }
+    setFlagN(false);
+
+    registers.pc++;
+    cycle_clock(1);
+}
+
+

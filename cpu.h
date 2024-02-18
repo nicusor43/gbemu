@@ -1,20 +1,18 @@
 //
 // Created by nicusor43 on 2/16/24.
 //
+
+#pragma once
+
 #include "stdint.h"
 #include "stdbool.h"
 #include "time.h"
-#ifndef GBEMU_CPU_H
-#define GBEMU_CPU_H
-
-#endif //GBEMU_CPU_H
-
-const int clockSpeed = 4194304; // 4.194304 MHz
 
 
+extern const int clockSpeed; // 4.194304 MHz
 
 // The registers of the Gameboy CPU, as described in the Pan Docs
-struct {
+typedef struct gb_registers {
     union {
         struct {
             uint8_t f; // flags: bit 7 is zero, bit 6 is subtract, bit 5 is half-carry, bit 4 is carry; 3 through 0 are NEVER used.
@@ -45,15 +43,15 @@ struct {
     };
     uint16_t sp; // stack pointer
     uint16_t pc; // program counter
-} registers;
+};
 
 // A struture to hold the timing information for the CPU
-struct {
+typedef struct gb_timer{
     uint16_t div; // divider register, actually the upper 8 bits of the number of clock cycles
     uint8_t tima; // timer counter
     uint8_t tma; // timer modulo
     uint8_t tac; // timer control
-} timer;
+};
 
 void cpu_start();
 
@@ -70,9 +68,21 @@ void setFlagH(bool value);
 bool getFlagC();
 void setFlagC(bool value);
 
-void nop();
 
 void cycle_clock(int time);
 
 void run_cpu();
+
+static inline void nop();
+
+static inline void inc(uint8_t *reg);
+
+static inline void inc_hl(uint8_t *hl);
+
+static inline void dec(uint8_t *reg);
+
+static inline void dec_hl(uint8_t *hl);
+
+
+
 
