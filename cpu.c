@@ -125,8 +125,8 @@ static inline void nop() {
     cycle_clock(1);
 }
 
-// When called, it will look something like this inc(&(&registers->l)); dumb language
-static inline void inc(uint8_t *reg) {
+// When called, it will look something like this inc8(&(&registers->l)); dumb language
+static inline void inc8(uint8_t *reg) {
     if ((*reg & 0x0F) == 0x0F) {
         setFlagH(true);
     } else {
@@ -144,7 +144,7 @@ static inline void inc(uint8_t *reg) {
     cycle_clock(1);
 }
 
-static inline void inc_hl(uint8_t *hl) {
+static inline void inc8_hl(uint8_t *hl) {
     if ((*hl & 0x0F) == 0x0F) {
         setFlagH(true);
     } else {
@@ -162,7 +162,7 @@ static inline void inc_hl(uint8_t *hl) {
     cycle_clock(3);
 }
 
-static inline void dec(uint8_t *reg) {
+static inline void dec8(uint8_t *reg) {
     if ((*reg & 0x0F) == 0x00) {
         setFlagH(true);
     } else {
@@ -180,7 +180,7 @@ static inline void dec(uint8_t *reg) {
     cycle_clock(1);
 }
 
-static inline void dec_hl(uint8_t *hl) {
+static inline void dec8_hl(uint8_t *hl) {
     if ((*hl & 0x0F) == 0x00) {
         setFlagH(true);
     } else {
@@ -195,7 +195,69 @@ static inline void dec_hl(uint8_t *hl) {
     setFlagN(false);
 
     registers.pc++;
+    cycle_clock(3);
+}
+
+static inline void add8_r(uint8_t reg_value) {
+    unsigned int result = registers.a + reg_value;
+
+    if (result > 0xFF) {
+        setFlagC(true);
+    } else {
+        setFlagC(false);
+    }
+
+    if ( ((registers.a & 0x0F) + (reg_value & 0x0F)) > 0x0F) {
+        setFlagH(true);
+    } else {
+        setFlagH(false);
+    }
+
+    setFlagN(false);
+
+    if(result == 0) {
+        setFlagZ(true);
+    } else {
+        setFlagZ(false);
+    }
+
+    registers.a = result & 0xFF;
+
+    // Maybe I should have tried Rust?
+
+    registers.pc++;
     cycle_clock(1);
 }
+
+static inline void add8_hl_n(uint8_t value) {
+    unsigned int result = registers.a + value;
+
+    if (result > 0xFF) {
+        setFlagC(true);
+    } else {
+        setFlagC(false);
+    }
+
+    if ( ((registers.a & 0x0F) + (value & 0x0F)) > 0x0F) {
+        setFlagH(true);
+    } else {
+        setFlagH(false);
+    }
+
+    setFlagN(false);
+
+    if(result == 0) {
+        setFlagZ(true);
+    } else {
+        setFlagZ(false);
+    }
+
+    registers.a = result & 0xFF;
+
+    registers.pc++;
+    cycle_clock(2);
+}
+
+
 
 

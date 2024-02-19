@@ -75,13 +75,26 @@ void run_cpu();
 
 static inline void nop();
 
-static inline void inc(uint8_t *reg);
+static inline void inc8(uint8_t *reg);
 
-static inline void inc_hl(uint8_t *hl);
+static inline void inc8_hl(uint8_t *hl);
 
-static inline void dec(uint8_t *reg);
+static inline void dec8(uint8_t *reg);
 
-static inline void dec_hl(uint8_t *hl);
+static inline void dec8_hl(uint8_t *hl);
+
+static inline void add8_r(uint8_t reg_value);
+
+static inline void add8_hl_n(uint8_t value);
+
+static inline void adc_r(uint8_t reg_value);
+
+static inline void adc_hl_n(uint8_t value);
+
+
+
+
+
 
 
 
