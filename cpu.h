@@ -91,6 +91,28 @@ static inline void adc_r(uint8_t reg_value);
 
 static inline void adc_hl_n(uint8_t value);
 
+static inline void sub8_r(uint8_t reg_value);
+
+static inline void sub8_hl_n(uint8_t value);
+
+static inline void sbc_r(uint8_t reg_value);
+
+static inline void sbc_hl_n(uint8_t value);
+
+// implement the functions in cpu.c
+static inline void and_r(uint8_t reg_value);
+
+static inline void and_hl_n(uint8_t value);
+
+static inline void or_r(uint8_t reg_value);
+
+static inline void or_hl_n(uint8_t value);
+
+static inline void xor_r(uint8_t reg_value);
+
+static inline void xor_hl_n(uint8_t value);
+
+static inline void ccf();
 
 
 
