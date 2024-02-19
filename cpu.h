@@ -12,7 +12,7 @@
 extern const int clockSpeed; // 4.194304 MHz
 
 // The registers of the Gameboy CPU, as described in the Pan Docs
-typedef struct gb_registers {
+struct gb_registers {
     union {
         struct {
             uint8_t f; // flags: bit 7 is zero, bit 6 is subtract, bit 5 is half-carry, bit 4 is carry; 3 through 0 are NEVER used.
@@ -46,7 +46,7 @@ typedef struct gb_registers {
 };
 
 // A struture to hold the timing information for the CPU
-typedef struct gb_timer{
+struct gb_timer {
     uint16_t div; // divider register, actually the upper 8 bits of the number of clock cycles
     uint8_t tima; // timer counter
     uint8_t tma; // timer modulo
@@ -57,15 +57,19 @@ void cpu_start();
 
 // Should have probably just written it in C++ atp.
 bool getFlagZ();
+
 void setFlagZ(bool value);
 
 bool getFlagN();
+
 void setFlagN(bool value);
 
 bool getFlagH();
+
 void setFlagH(bool value);
 
 bool getFlagC();
+
 void setFlagC(bool value);
 
 
@@ -99,7 +103,6 @@ static inline void sbc_r(uint8_t reg_value);
 
 static inline void sbc_hl_n(uint8_t value);
 
-// implement the functions in cpu.c
 static inline void and_r(uint8_t reg_value);
 
 static inline void and_hl_n(uint8_t value);
@@ -114,7 +117,28 @@ static inline void xor_hl_n(uint8_t value);
 
 static inline void ccf();
 
+static inline void scf();
 
+static inline void cpl();
+
+static inline void cp_r(uint8_t reg_value);
+
+static inline void cp_hl_n(uint8_t value);
+
+static inline void daa();
+
+// 16-bit arithmetic
+static inline void inc16(uint16_t *reg);
+
+static inline void dec16(uint16_t *reg);
+
+static inline void add16_hl(uint16_t reg_value);
+
+static inline void add16_sp(int8_t value);
+
+static inline void rlca();
+
+static inline void rrca();
 
 
 

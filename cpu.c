@@ -544,6 +544,203 @@ static inline void ccf() {
     cycle_clock(1);
 }
 
+static inline void scf() {
+    setFlagN(false);
+    setFlagH(false);
+    setFlagC(true);
+
+    registers.pc++;
+    cycle_clock(1);
+}
+
+static inline void cpl() {
+    registers.a = ~registers.a;
+
+    setFlagN(true);
+    setFlagH(true);
+
+    registers.pc++;
+    cycle_clock(1);
+}
+
+static inline void cp_r(uint8_t reg_value) {
+    unsigned int result = registers.a - reg_value;
+
+    if (reg_value > registers.a) {
+        setFlagC(true);
+    } else {
+        setFlagC(false);
+    }
+
+    if ((registers.a & 0x0F) < (reg_value & 0x0F)) {
+        setFlagH(true);
+    } else {
+        setFlagH(false);
+    }
+
+    setFlagN(true);
+
+    if (result == 0) {
+        setFlagZ(true);
+    } else {
+        setFlagZ(false);
+    }
+
+    registers.pc++;
+    cycle_clock(1);
+}
+
+static inline void cp_hl_n(uint8_t value) {
+    unsigned int result = registers.a - value;
+
+    if (value > registers.a) {
+        setFlagC(true);
+    } else {
+        setFlagC(false);
+    }
+
+    if ((registers.a & 0x0F) < (value & 0x0F)) {
+        setFlagH(true);
+    } else {
+        setFlagH(false);
+    }
+
+    setFlagN(true);
+
+    if (result == 0) {
+        setFlagZ(true);
+    } else {
+        setFlagZ(false);
+    }
+
+    registers.pc++;
+    cycle_clock(2);
+}
+
+static inline void daa() {
+    if (!getFlagN()) {
+        if (getFlagH() || (registers.a & 0x0F) > 9) {
+            registers.a += 0x06;
+        }
+        if (getFlagC() || registers.a > 0x99) {
+            registers.a += 0x60;
+            setFlagC(true);
+        }
+    } else {
+        if (getFlagH()) {
+            registers.a -= 6;
+        }
+        if (getFlagC()) {
+            registers.a -= 0x60;
+        }
+    }
+
+    if (registers.a == 0) {
+        setFlagZ(true);
+    } else {
+        setFlagZ(false);
+    }
+
+    setFlagH(false);
+
+    registers.pc++;
+    cycle_clock(1);
+}
+
+// 16-bit arithmetic
+static inline void inc16(uint16_t *reg) {
+    (*reg)++;
+
+    registers.pc++;
+    cycle_clock(2);
+}
+
+static inline void dec16(uint16_t *reg) {
+    (*reg)--;
+
+    registers.pc++;
+    cycle_clock(2);
+}
+
+static inline void add16_hl(uint16_t reg_value) {
+    unsigned int result = registers.hl + reg_value;
+
+    if (result > 0xFFFF) {
+        setFlagC(true);
+    } else {
+        setFlagC(false);
+    }
+
+    if (((registers.hl & 0x0FFF) + (reg_value & 0x0FFF)) > 0x0FFF) {
+        setFlagH(true);
+    } else {
+        setFlagH(false);
+    }
+
+    setFlagN(false);
+
+    registers.hl = result & 0xFFFF;
+
+    registers.pc++;
+    cycle_clock(2);
+}
+
+
+// Does this even exist?
+static inline void add16_sp(int8_t signed_value) {
+    unsigned int result = registers.sp + signed_value;
+
+    if (result > 0xFF) {
+        setFlagC(true);
+    } else {
+        setFlagC(false);
+    }
+
+    if (((registers.sp & 0x0F) + (signed_value & 0x0F)) > 0x0F) {
+        setFlagH(true);
+    } else {
+        setFlagH(false);
+    }
+
+    setFlagN(false);
+
+    registers.sp = result & 0xFFFF;
+
+    registers.pc++;
+    cycle_clock(4);
+}
+
+// Rotate instructions
+static inline void rlca() {
+    setFlagC(registers.a >> 7 & 1);
+
+    registers.a = (registers.a << 1) | (registers.a >> 7);
+
+    setFlagN(false);
+    setFlagH(false);
+    setFlagZ(false);
+
+    registers.pc++;
+    cycle_clock(1);
+}
+
+static inline void rrca() {
+    setFlagC(registers.a & 1);
+
+    registers.a = (registers.a >> 1) | (registers.a << 7);
+
+    setFlagN(false);
+    setFlagH(false);
+    setFlagZ(false);
+
+    registers.pc++;
+    cycle_clock(1);
+}
+
+static inline void rla() {
+
+}
+
 
 
 

@@ -15,4 +15,5 @@ void run_emulator() {
     for (int cycles = 1; cycles <= clocks_per_frame; cycles++) {
         run_cpu();
     }
+
 }
