@@ -77,68 +77,6 @@ void cycle_clock(int time);
 
 void run_cpu();
 
-static inline void nop();
-
-static inline void inc8(uint8_t *reg);
-
-static inline void inc8_hl(uint8_t *hl);
-
-static inline void dec8(uint8_t *reg);
-
-static inline void dec8_hl(uint8_t *hl);
-
-static inline void add8_r(uint8_t reg_value);
-
-static inline void add8_hl_n(uint8_t value);
-
-static inline void adc_r(uint8_t reg_value);
-
-static inline void adc_hl_n(uint8_t value);
-
-static inline void sub8_r(uint8_t reg_value);
-
-static inline void sub8_hl_n(uint8_t value);
-
-static inline void sbc_r(uint8_t reg_value);
-
-static inline void sbc_hl_n(uint8_t value);
-
-static inline void and_r(uint8_t reg_value);
-
-static inline void and_hl_n(uint8_t value);
-
-static inline void or_r(uint8_t reg_value);
-
-static inline void or_hl_n(uint8_t value);
-
-static inline void xor_r(uint8_t reg_value);
-
-static inline void xor_hl_n(uint8_t value);
-
-static inline void ccf();
-
-static inline void scf();
-
-static inline void cpl();
-
-static inline void cp_r(uint8_t reg_value);
-
-static inline void cp_hl_n(uint8_t value);
-
-static inline void daa();
-
-// 16-bit arithmetic
-static inline void inc16(uint16_t *reg);
-
-static inline void dec16(uint16_t *reg);
-
-static inline void add16_hl(uint16_t reg_value);
-
-static inline void add16_sp(int8_t value);
-
-static inline void rlca();
-
-static inline void rrca();
 
 
 

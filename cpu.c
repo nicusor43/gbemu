@@ -9,6 +9,102 @@
 struct gb_registers registers;
 struct gb_timer timer;
 
+// Funny programming language.
+static inline void nop();
+
+static inline void inc8(uint8_t *reg);
+
+static inline void inc8_hl(uint8_t *hl);
+
+static inline void dec8(uint8_t *reg);
+
+static inline void dec8_hl(uint8_t *hl);
+
+static inline void add8_r(uint8_t reg_value);
+
+static inline void add8_hl_n(uint8_t value);
+
+static inline void adc_r(uint8_t reg_value);
+
+static inline void adc_hl_n(uint8_t value);
+
+static inline void sub8_r(uint8_t reg_value);
+
+static inline void sub8_hl_n(uint8_t value);
+
+static inline void sbc_r(uint8_t reg_value);
+
+static inline void sbc_hl_n(uint8_t value);
+
+static inline void and_r(uint8_t reg_value);
+
+static inline void and_hl_n(uint8_t value);
+
+static inline void or_r(uint8_t reg_value);
+
+static inline void or_hl_n(uint8_t value);
+
+static inline void xor_r(uint8_t reg_value);
+
+static inline void xor_hl_n(uint8_t value);
+
+static inline void ccf();
+
+static inline void scf();
+
+static inline void cpl();
+
+static inline void cp_r(uint8_t reg_value);
+
+static inline void cp_hl_n(uint8_t value);
+
+static inline void daa();
+
+// 16-bit arithmetic
+static inline void inc16(uint16_t *reg);
+
+static inline void dec16(uint16_t *reg);
+
+static inline void add16_hl(uint16_t reg_value);
+
+static inline void add16_sp(int8_t value);
+
+static inline void rlca();
+
+static inline void rrca();
+
+static inline void rla();
+
+static inline void rra();
+
+static inline void rl(uint8_t *reg);
+
+static inline void rr(uint8_t *reg);
+
+static inline void rlc(uint8_t *reg);
+
+static inline void rrc(uint8_t *reg);
+
+static inline void rl_hl(uint8_t *hl);
+
+static inline void rr_hl(uint8_t *hl);
+
+static inline void rlc_hl(uint8_t *hl);
+
+static inline void rrc_hl(uint8_t *hl);
+
+static inline void sla(uint8_t *reg);
+
+static inline void sra(uint8_t *reg);
+
+static inline void sla_hl(uint8_t *hl);
+
+static inline void sra_hl(uint8_t *hl);
+
+static inline void srl(uint8_t *reg);
+
+static inline void srl_hl(uint8_t *hl);
+
 void cpu_start() {
     registers.af = 0x01B0;
     registers.bc = 0x0013;
@@ -738,9 +834,212 @@ static inline void rrca() {
 }
 
 static inline void rla() {
+    uint8_t new_carry = (registers.a >> 7) & 1;
 
+    registers.a = (registers.a << 1) | getFlagC();
+
+    setFlagC(new_carry == 1);
+
+    setFlagH(false);
+    setFlagZ(false);
+    setFlagN(false);
 }
 
+static inline void rra() {
+    uint8_t new_carry = registers.a & 1;
 
+    registers.a = (registers.a >> 1) | (getFlagC() << 7);
+
+    setFlagC(new_carry == 1);
+
+    setFlagH(false);
+    setFlagZ(false);
+    setFlagN(false);
+
+    registers.pc++;
+    cycle_clock(1);
+}
+
+static inline void rl(uint8_t *reg) {
+    uint8_t new_carry = (*reg >> 7) & 1;
+
+    *reg = (*reg << 1) | getFlagC();
+
+    setFlagC(new_carry == 1);
+
+    setFlagH(false);
+    setFlagN(false);
+    setFlagZ(*reg == 0);
+
+
+    registers.pc++;
+    cycle_clock(2);
+}
+
+static inline void rr(uint8_t *reg) {
+    uint8_t new_carry = *reg & 1;
+
+    *reg = (*reg >> 1) | (getFlagC() << 7);
+
+    setFlagC(new_carry == 1);
+
+    setFlagH(false);
+    setFlagN(false);
+    setFlagZ(*reg == 0);
+
+
+    registers.pc++;
+    cycle_clock(2);
+}
+
+static inline void rlc(uint8_t *reg) {
+    setFlagC(*reg >> 7 & 1);
+
+    *reg = (*reg << 1) | (*reg >> 7);
+
+    setFlagN(false);
+    setFlagH(false);
+    setFlagZ(*reg == 0);
+
+    registers.pc++;
+    cycle_clock(2);
+}
+
+static inline void rrc(uint8_t *reg) {
+    setFlagC(*reg & 1);
+
+    *reg = (*reg >> 1) | (*reg << 7);
+
+    setFlagN(false);
+    setFlagH(false);
+    setFlagZ(*reg == 0);
+
+    registers.pc++;
+    cycle_clock(2);
+}
+
+static inline void rl_hl(uint8_t *hl) {
+    uint8_t new_carry = (*hl >> 7) & 1;
+
+    *hl = (*hl << 1) | getFlagC();
+
+    setFlagC(new_carry == 1);
+
+    setFlagH(false);
+    setFlagN(false);
+    setFlagZ(*hl == 0);
+
+    registers.pc++;
+    cycle_clock(4);
+}
+
+static inline void rr_hl(uint8_t *hl) {
+    uint8_t new_carry = *hl & 1;
+
+    *hl = (*hl >> 1) | (getFlagC() << 7);
+
+    setFlagC(new_carry == 1);
+
+    setFlagH(false);
+    setFlagN(false);
+    setFlagZ(*hl == 0);
+
+    registers.pc++;
+    cycle_clock(4);
+}
+
+static inline void rlc_hl(uint8_t *hl) {
+    setFlagC(*hl >> 7 & 1);
+
+    *hl = (*hl << 1) | (*hl >> 7);
+
+    setFlagN(false);
+    setFlagH(false);
+    setFlagZ(*hl == 0);
+
+    registers.pc++;
+    cycle_clock(4);
+}
+
+static inline void rrc_hl(uint8_t *hl) {
+    setFlagC(*hl & 1);
+
+    *hl = (*hl >> 1) | (*hl << 7);
+
+    setFlagN(false);
+    setFlagH(false);
+    setFlagZ(*hl == 0);
+
+    registers.pc++;
+    cycle_clock(4);
+}
+
+static inline void sla(uint8_t *reg) {
+    setFlagC(*reg >> 7 & 1);
+
+    *reg <<= 1;
+
+    setFlagN(false);
+    setFlagH(false);
+    setFlagZ(*reg == 0);
+
+    registers.pc++;
+    cycle_clock(2);
+}
+
+static inline void sra(uint8_t *reg) {
+    setFlagC(*reg & 1);
+
+    int msb = *reg >> 7 & 1;
+    *reg = (*reg >> 1) | (msb << 7);
+
+
+    setFlagN(false);
+    setFlagH(false);
+    setFlagZ(*reg == 0);
+
+    registers.pc++;
+    cycle_clock(2);
+}
+
+static inline void sla_hl(uint8_t *hl) {
+    setFlagC(*hl >> 7 & 1);
+
+    *hl <<= 1;
+
+    setFlagN(false);
+    setFlagH(false);
+    setFlagZ(*hl == 0);
+
+    registers.pc++;
+    cycle_clock(4);
+}
+
+static inline void sra_hl(uint8_t *hl) {
+    setFlagC(*hl & 1);
+
+    int msb = *hl >> 7 & 1;
+    *hl = (*hl >> 1) | (msb << 7);
+
+    setFlagN(false);
+    setFlagH(false);
+    setFlagZ(*hl == 0);
+
+    registers.pc++;
+    cycle_clock(4);
+}
+
+static inline void srl(uint8_t *reg) {
+    setFlagC(*reg & 1);
+
+    *reg >>= 1;
+
+    setFlagN(false);
+    setFlagH(false);
+    setFlagZ(*reg == 0);
+
+    registers.pc++;
+    cycle_clock(2);
+}
 
 

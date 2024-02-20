@@ -51,13 +51,13 @@ build cmake_object_order_depends_target_gbemu: phony || CMakeFiles/gbemu.dir
 
 build CMakeFiles/gbemu.dir/gb.c.o: C_COMPILER__gbemu_unscanned_Debug /home/nicusor43/CLionProjects/gbemu/gb.c || cmake_object_order_depends_target_gbemu
   DEP_FILE = CMakeFiles/gbemu.dir/gb.c.o.d
-  FLAGS = -g -std=gnu11 -fdiagnostics-color=always
+  FLAGS = -O3 -std=c17 -pipe -g -Wall -Wextra -Wpedantic -g -fdiagnostics-color=always
   OBJECT_DIR = CMakeFiles/gbemu.dir
   OBJECT_FILE_DIR = CMakeFiles/gbemu.dir
 
 build CMakeFiles/gbemu.dir/cpu.c.o: C_COMPILER__gbemu_unscanned_Debug /home/nicusor43/CLionProjects/gbemu/cpu.c || cmake_object_order_depends_target_gbemu
   DEP_FILE = CMakeFiles/gbemu.dir/cpu.c.o.d
-  FLAGS = -g -std=gnu11 -fdiagnostics-color=always
+  FLAGS = -O3 -std=c17 -pipe -g -Wall -Wextra -Wpedantic -g -fdiagnostics-color=always
   OBJECT_DIR = CMakeFiles/gbemu.dir
   OBJECT_FILE_DIR = CMakeFiles/gbemu.dir
 
@@ -70,7 +70,7 @@ build CMakeFiles/gbemu.dir/cpu.c.o: C_COMPILER__gbemu_unscanned_Debug /home/nicu
 # Link the executable gbemu
 
 build gbemu: C_EXECUTABLE_LINKER__gbemu_Debug CMakeFiles/gbemu.dir/gb.c.o CMakeFiles/gbemu.dir/cpu.c.o
-  FLAGS = -g
+  FLAGS = -O3 -std=c17 -pipe -g -Wall -Wextra -Wpedantic -g
   OBJECT_DIR = CMakeFiles/gbemu.dir
   POST_BUILD = :
   PRE_LINK = :
