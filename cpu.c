@@ -105,6 +105,24 @@ static inline void srl(uint8_t *reg);
 
 static inline void srl_hl(uint8_t *hl);
 
+static inline void swap(uint8_t *reg);
+
+static inline void swap_hl(uint8_t *hl);
+
+static inline void set(uint8_t *reg, uint8_t bit);
+
+static inline void set_hl(uint8_t *hl, uint8_t bit);
+
+static inline void res(uint8_t *reg, uint8_t bit);
+
+static inline void res_hl(uint8_t *hl, uint8_t bit);
+
+static inline void bit(uint8_t reg, uint8_t bit);
+
+static inline void bit_hl(uint8_t hl, uint8_t bit);
+
+
+
 void cpu_start() {
     registers.af = 0x01B0;
     registers.bc = 0x0013;
@@ -1042,4 +1060,96 @@ static inline void srl(uint8_t *reg) {
     cycle_clock(2);
 }
 
+static inline void srl_hl(uint8_t *hl) {
+    setFlagC(*hl & 1);
+
+    *hl >>= 1;
+
+    setFlagN(false);
+    setFlagH(false);
+    setFlagZ(*hl == 0);
+
+    registers.pc++;
+    cycle_clock(4);
+}
+
+static inline void swap(uint8_t *reg) {
+    *reg = (*reg >> 4) | (*reg << 4);
+
+    setFlagN(false);
+    setFlagH(false);
+    setFlagC(false);
+    setFlagZ(*reg == 0);
+
+    registers.pc++;
+    cycle_clock(2);
+}
+
+static inline void swap_hl(uint8_t *hl) {
+    *hl = (*hl >> 4) | (*hl << 4);
+
+    setFlagN(false);
+    setFlagH(false);
+    setFlagC(false);
+    setFlagZ(*hl == 0);
+
+    registers.pc++;
+    cycle_clock(4);
+}
+
+static inline void set(uint8_t *reg, uint8_t bit) {
+    *reg |= 1 << bit;
+
+    registers.pc++;
+    cycle_clock(2);
+}
+
+static inline void set_hl(uint8_t *hl, uint8_t bit) {
+    *hl |= 1 << bit;
+
+    registers.pc++;
+    cycle_clock(4);
+}
+
+static inline void res(uint8_t *reg, uint8_t bit) {
+    *reg &= ~(1 << bit);
+
+    registers.pc++;
+    cycle_clock(2);
+}
+
+static inline void res_hl(uint8_t *hl, uint8_t bit) {
+    *hl &= ~(1 << bit);
+
+    registers.pc++;
+    cycle_clock(4);
+}
+
+static inline void bit(uint8_t reg, uint8_t bit) {
+    if (reg >> bit & 1) {
+        setFlagZ(false);
+    } else {
+        setFlagZ(true);
+    }
+
+    setFlagN(false);
+    setFlagH(true);
+
+    registers.pc++;
+    cycle_clock(2);
+}
+
+static inline void bit_hl(uint8_t hl, uint8_t bit) {
+    if (hl >> bit & 1) {
+        setFlagZ(false);
+    } else {
+        setFlagZ(true);
+    }
+
+    setFlagN(false);
+    setFlagH(true);
+
+    registers.pc++;
+    cycle_clock(3);
+}
 
