@@ -10,7 +10,7 @@ struct gb_registers registers;
 struct gb_timer timer;
 
 // Funny programming language.
-static inline void nop();
+static inline void nop(void);
 
 static inline void inc8(uint8_t *reg);
 
@@ -67,11 +67,11 @@ static inline void xor_hl(uint8_t value);
 
 static inline void xor_n(uint8_t value);
 
-static inline void ccf();
+static inline void ccf(void);
 
-static inline void scf();
+static inline void scf(void);
 
-static inline void cpl();
+static inline void cpl(void);
 
 static inline void cp_r(uint8_t reg_value);
 
@@ -80,7 +80,7 @@ static inline void cp_hl(uint8_t value);
 static inline void cp_n(uint8_t value);
 
 
-static inline void daa();
+static inline void daa(void);
 
 // 16-bit arithmetic
 static inline void inc16(uint16_t *reg);
@@ -91,13 +91,13 @@ static inline void add16_hl(uint16_t reg_value);
 
 static inline void add16_sp(int8_t value);
 
-static inline void rlca();
+static inline void rlca(void);
 
-static inline void rrca();
+static inline void rrca(void);
 
-static inline void rla();
+static inline void rla(void);
 
-static inline void rra();
+static inline void rra(void);
 
 static inline void rl(uint8_t *reg);
 
@@ -155,11 +155,11 @@ static inline void ld16_r_n(uint16_t *dest, uint16_t value);
 
 static inline void ld8_hl_n(uint8_t *hl, uint8_t value);
 
-static inline void ld16_r_A(uint8_t *dest);
+static inline void ld16_r_A(uint16_t *dest);
 
 static inline void ld16_n_A(uint8_t *dest);
 
-static inline void ldh16_n_A(uint8_t *dest);
+static inline void ldh16_n_A(uint16_t address);
 
 static inline void ldh_C_A(uint8_t *dest);
 
@@ -171,24 +171,24 @@ static inline void ldh_A_C(uint8_t src);
 
 static inline void ld16_A_n(uint8_t src);
 
-static inline void ld_hli_A();
+static inline void ld_hli_A(uint8_t *hl);
 
-static inline void ld_hld_A();
+static inline void ld_hld_A(uint8_t *hl);
 
-static inline void ld_A_hli();
+static inline void ld_A_hli(uint8_t *hl);
 
-static inline void ld_A_hld();
+static inline void ld_A_hld(uint8_t *hl);
 
 static inline void ld16_sp_n(uint16_t value);
 
 static inline void ld16_n_sp(uint8_t *dest);
 
-static inline void ld_hl_sp_e8();
+static inline void ld_hl_sp_e8(int8_t signed_value);
 
-static inline void ld_sp_hl();
+static inline void ld_sp_hl(void);
 
 
-void cpu_start() {
+void cpu_start(void) {
     registers.af = 0x01B0;
     registers.bc = 0x0013;
     registers.de = 0x00D8;
@@ -200,19 +200,19 @@ void cpu_start() {
 
 }
 
-bool getFlagZ() {
+bool getFlagZ(void) {
     return registers.af >> 7 & 1;
 }
 
-bool getFlagN() {
+bool getFlagN(void) {
     return registers.af >> 6 & 1;
 }
 
-bool getFlagH() {
+bool getFlagH(void) {
     return registers.af >> 5 & 1;
 }
 
-bool getFlagC() {
+bool getFlagC(void) {
     return registers.af >> 4 & 1;
 }
 
@@ -1086,7 +1086,7 @@ static inline void add16_sp(int8_t signed_value) {
 }
 
 // Rotate instructions
-static inline void rlca() {
+static inline void rlca(void) {
     setFlagC(registers.a >> 7 & 1);
 
     registers.a = (registers.a << 1) | (registers.a >> 7);
@@ -1099,7 +1099,7 @@ static inline void rlca() {
     cycle_clock(1);
 }
 
-static inline void rrca() {
+static inline void rrca(void) {
     setFlagC(registers.a & 1);
 
     registers.a = (registers.a >> 1) | (registers.a << 7);
@@ -1112,7 +1112,7 @@ static inline void rrca() {
     cycle_clock(1);
 }
 
-static inline void rla() {
+static inline void rla(void) {
     uint8_t new_carry = (registers.a >> 7) & 1;
 
     registers.a = (registers.a << 1) | getFlagC();
@@ -1124,7 +1124,7 @@ static inline void rla() {
     setFlagN(false);
 }
 
-static inline void rra() {
+static inline void rra(void) {
     uint8_t new_carry = registers.a & 1;
 
     registers.a = (registers.a >> 1) | (getFlagC() << 7);
@@ -1427,3 +1427,151 @@ static inline void ld_r_n(uint8_t *dest, uint8_t value) {
     registers.pc += 2;
     cycle_clock(2);
 }
+
+static inline void ld16_r_n(uint16_t *dest, uint16_t value) {
+    *dest = value;
+
+    registers.pc += 3;
+    cycle_clock(3);
+}
+
+static inline void ld_r_hl(uint8_t *dest, uint8_t *hl) {
+    *dest = *hl;
+
+    registers.pc++;
+    cycle_clock(2);
+}
+
+static inline void ld_hl_r(uint8_t *hl, uint8_t *src) {
+    *hl = *src;
+
+    registers.pc++;
+    cycle_clock(2);
+}
+
+static inline void ld8_hl_n(uint8_t *hl, uint8_t value) {
+    *hl = value;
+
+    registers.pc += 2;
+    cycle_clock(3);
+}
+
+static inline void ld16_r_A(uint16_t *dest) {
+    *dest = registers.a;
+
+    registers.pc++;
+    cycle_clock(2);
+}
+
+static inline void ld16_n_A(uint8_t *dest) {
+    *dest = registers.a;
+
+    registers.pc += 3;
+    cycle_clock(4);
+}
+
+static inline void ldh16_n_A(uint16_t address) {
+    // TODO: When the memory is finished, do this
+
+    registers.pc += 2;
+    cycle_clock(3);
+}
+
+static inline void ldh_C_A(uint8_t *dest) {
+    // TODO
+
+    registers.pc++;
+    cycle_clock(2);
+}
+
+static inline void ld16_A_n(uint8_t src) {
+    registers.a = src;
+
+    registers.pc += 3;
+    cycle_clock(4);
+}
+
+static inline void ld16_A_r(uint8_t src) {
+    registers.a = src;
+
+    registers.pc++;
+    cycle_clock(2);
+}
+
+static inline void ldh16_A_n(uint8_t src) {
+    // TODO
+
+    registers.pc += 2;
+    cycle_clock(3);
+}
+
+static inline void ldh_A_C(uint8_t src) {
+    // TODO
+
+    registers.pc++;
+    cycle_clock(2);
+}
+
+
+static inline void ld_hli_A(uint8_t *hl) {
+    *hl = registers.a;
+    registers.hl++;
+
+    registers.pc++;
+    cycle_clock(2);
+}
+
+static inline void ld_hld_A(uint8_t *hl) {
+    *hl = registers.a;
+    registers.hl--;
+
+    registers.pc++;
+    cycle_clock(2);
+}
+
+static inline void ld_A_hli(uint8_t *hl) {
+    registers.a = *hl;
+    registers.hl++;
+
+    registers.pc++;
+    cycle_clock(2);
+}
+
+static inline void ld_A_hld(uint8_t *hl) {
+    registers.a = *hl;
+    registers.hl--;
+
+    registers.pc++;
+    cycle_clock(2);
+}
+
+static inline void ld16_sp_n(uint16_t value) {
+    registers.sp = value;
+
+    registers.pc += 3;
+    cycle_clock(3);
+}
+
+static inline void ld16_n_sp(uint8_t *dest) {
+    *dest = registers.sp & 0xFF;
+    // TODO dest + 1
+
+    registers.pc += 3;
+    cycle_clock(5);
+}
+
+static inline void ld_hl_sp_e8(int8_t signed_value) {
+    registers.hl = signed_value + registers.hl;
+
+
+    registers.pc += 2;
+    cycle_clock(3);
+}
+
+static inline void ld_sp_hl(void) {
+    registers.sp = registers.hl;
+
+    registers.pc++;
+    cycle_clock(2);
+}
+
