@@ -6,7 +6,10 @@ set(CMAKE_C_STANDARD 17)
 add_executable(gbemu gb.c
         gb.h
         cpu.c
-        cpu.h)
+        cpu.h
+        memory.c
+        memory.h
+)
 
 find_package(SDL2 REQUIRED)
 

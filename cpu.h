@@ -9,8 +9,6 @@
 #include "time.h"
 
 
-extern const int clockSpeed; // 4.194304 MHz
-
 // The registers of the Gameboy CPU, as described in the Pan Docs
 struct gb_registers {
     union {
