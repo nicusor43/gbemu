@@ -9,10 +9,11 @@
 
 #define WRAM_SIZE 0x2000
 #define VRAM_SIZE 0x2000
-#define ERAM_SIZE 0x2000 // honestly I don't know how much this is supposed to be; I will take it as what the cpu can address
+#define ERAM_SIZE 0x2000 // honestly I don't know how much this is supposed to be; I will suppose it's what the cpu can address
 #define OAM_SIZE 0x00A0
 #define HRAM_SIZE 0x007F
 #define IO_REGISTERS_SIZE 0x0080
+#define ROM_BANK_SIZE 0x4000
 
 typedef struct gb_memory {
     uint8_t wram[WRAM_SIZE]; // work ram => 2 banks of 0x1000 bytes each
@@ -20,6 +21,8 @@ typedef struct gb_memory {
     uint8_t vram[VRAM_SIZE]; // video ram
     uint8_t oam[OAM_SIZE];   // object attribute memory
     uint8_t hram[HRAM_SIZE]; // high ram
+    uint8_t rom_bank_zero[ROM_BANK_SIZE];
+    uint8_t rom_bank_switchable[ROM_BANK_SIZE];
 
     uint8_t io_registers[IO_REGISTERS_SIZE]; // io registers
     uint8_t ie;
